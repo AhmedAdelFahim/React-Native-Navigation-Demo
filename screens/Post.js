@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import {Image, StyleSheet, Text, View} from "react-native";
+import {ActivityIndicator, Image, StyleSheet, Text, View, SafeAreaView} from "react-native";
 import axios from 'axios'
 
 const Post = ({route: {params: {post_id}}}) => {
+    const [isLoading,changeLoadingState] = useState(false)
     const [post, setPost] = useState({})
     const styles = StyleSheet.create({
         post_container: {
@@ -35,23 +36,26 @@ const Post = ({route: {params: {post_id}}}) => {
     })
 
     useEffect(() => {
+        changeLoadingState(true)
         axios.get(`https://jsonplaceholder.typicode.com/posts/${post_id}`).then((response) => {
             setPost(response.data)
+            changeLoadingState(false)
         }).catch((e) => {
             console.log(e)
+            changeLoadingState(false)
         })
     }, [])
-    return (
-
-        <View style={[styles.post_container, styles.shadow]}>
-            <Text style={styles.post_title}>{post.title}</Text>
-            <Image
-                style={styles.post_img}
-                source={{uri: 'https://source.unsplash.com/random'}}
-            />
-            <Text style={styles.post_body}>{post.body}</Text>
-        </View>
-
+    return (<SafeAreaView>
+            {isLoading && <ActivityIndicator color="#5163EB" size="large" style={{marginVertical: 25}}/>}
+            <View style={[styles.post_container, styles.shadow]}>
+                <Text style={styles.post_title}>{post.title}</Text>
+                <Image
+                    style={styles.post_img}
+                    source={{uri: 'https://source.unsplash.com/random'}}
+                />
+                <Text style={styles.post_body}>{post.body}</Text>
+            </View>
+        </SafeAreaView>
     )
 }
 
